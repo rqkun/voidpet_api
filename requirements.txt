@@ -1,0 +1,8 @@
+httpx
+discord.py
+supabase
+gspread
+oauth2client
+django
+djangorestframework
+python-dotenv
