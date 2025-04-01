@@ -21,4 +21,5 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('world/',include('api.world.urls')),
     path('export/',include('api.export.urls')),
+    path('market/',include('api.market.urls')),
 ]

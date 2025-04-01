@@ -11,7 +11,7 @@ def export(request):
     export_name = request.GET.get("file")  # Get the export name from the request query
 
     if not export_name or not hasattr(AppExports, export_name):
-        return Response({"error": "Invalid export name"}, status=400)
+        return Response({"error": "Invalid file name"}, status=400)
 
     export_enum = getattr(AppExports, export_name)  # Get the enum member dynamically
     return Response(warframe_export.export_open(export_enum.value))
