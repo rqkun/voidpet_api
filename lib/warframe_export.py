@@ -7,7 +7,7 @@ import requests
 import urllib
 
 from supabase import Client, create_client
-from common import raise_detailed_error
+from lib.common import raise_detailed_error
 from dotenv import load_dotenv, find_dotenv
 import os
 def export_open(item:Enum):
@@ -69,14 +69,9 @@ def export_open(item:Enum):
             request_object = requests.get(f"""{os.environ["SUPABASE_BUCKET_URL"]}{item["path"]}""")
             raise_detailed_error(request_object)
             return request_object.json()[item["object_name"]]
-        except requests.exceptions.RequestException as s3_error:
-            logging.warning(f"""Failed request object {item["path"]} in Origin System({s3_error.args[0]}). Trying to read from local backup.""")
-            try:
-                with open(f"""static/exports/{item["path"]}""", "r", encoding="utf-8") as file:
-                    return json.load(file)[item["object_name"]]
-            except Exception as e:
-                logging.error(f"""Failed to read object {item["path"]}. Error: {s3_error.args[0]}""")
-                return None
+        except Exception as e:
+            logging.error(f"""Failed to read object {item["path"]}. Error: {e}""")
+            return None
 
 def get_index_file():
     """Fetch and decompress the manifest file."""

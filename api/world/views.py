@@ -1,8 +1,8 @@
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 
-from voidpet.lib import warframe_status
-from voidpet.lib.common import clean_event_data
+from lib import warframe_status
+from lib.common import clean_event_data
 
 @api_view(['GET'])
 def world(request):
