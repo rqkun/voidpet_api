@@ -28,7 +28,7 @@ SECRET_KEY = os.environ['APP_SECRET']
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = os.environ['ALLOWED_HOSTS'].split(",")
 
 
 # Application definition
