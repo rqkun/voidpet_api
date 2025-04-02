@@ -1,3 +1,4 @@
+from datetime import datetime, timezone
 import re
 import urllib
 import requests
@@ -20,31 +21,6 @@ def raise_detailed_error(request_object):
     except requests.exceptions.ConnectionError as error:
         raise requests.exceptions.ConnectionError(error, request_object.text)
 
-def clean_event_data(data):
-    """Cleaning missing data from event API.
-
-    Args:
-        data (dict): json data of the event.
-
-    Returns:
-        dict: the cleaned data.
-    """
-    if 'currentScore' in data:
-        pass
-    else: 
-        data['currentScore'] = 0
-    
-    if 'description' in data:
-        pass
-    else: 
-        data['description'] = "No Description"
-    
-    if 'node' in data:
-        pass
-    else: 
-        data['node'] = "No Data"
-    return data
-
 
 def encode_identifier(identifier, is_unique=False):
     """
@@ -65,3 +41,46 @@ def encode_identifier(identifier, is_unique=False):
         identifier = re.sub(r'\s*\(.*?\)', '', identifier)
 
     return urllib.parse.quote(identifier,safe="&")
+
+def calculate_percentage_time(start:str,end:str) -> float:
+    """Calculate time percentage base on start, end time.
+
+    Args:
+        start (string): Start timestamp string.
+        end (string): End timestamp string.
+
+    Returns:
+        float: calculated percentage completed.
+    """
+    target_time = datetime.fromisoformat(end.replace("Z", "+00:00"))
+    # Current time in UTC
+    current_time = datetime.now(timezone.utc)
+    # Calculate percentage
+    start_time = datetime.fromisoformat(start.replace("Z", "+00:00"))  # Arbitrary start point
+    elapsed_time = (current_time - start_time).total_seconds()
+    total_time = (target_time - start_time).total_seconds()
+    percentage_completed = (elapsed_time / total_time)
+    return percentage_completed
+
+def format_timedelta(delta, day=True):
+    """
+    Extract hours, minutes, and optionally days from a timedelta object.
+
+    Args:
+        delta (timedelta): Time period.
+        day (bool, optional): Whether to include days in the output. Defaults to True.
+
+    Returns:
+        str: Formatted time message.
+    """
+    total_seconds = int(delta.total_seconds())
+    days, remainder = divmod(abs(total_seconds), 86400)
+    hours, remainder = divmod(remainder, 3600)
+    minutes = divmod(remainder, 60)[0]
+    message = (
+        f"{days}d, {hours}h, {minutes}m"
+        if day else
+        f"{hours}h:{minutes}m"
+    )
+
+    return message + " ago" if total_seconds < 0 else message

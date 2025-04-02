@@ -2,8 +2,8 @@ from rest_framework.response import Response
 from rest_framework.decorators import api_view
 
 from lib import warframe_status
-from lib.common import clean_event_data
-
+from services.world import alert as alert_services
+from services.world import event as event_services
 @api_view(['GET'])
 def world(request):
     return Response(warframe_status.world())
@@ -36,15 +36,7 @@ def alert(request):
     Returns:
         dict: alerts data | None
     """
-    response = warframe_status.world("alerts")
-    if len(response) >0:
-        sorted_alert = sorted(
-        [order for order in response ],
-        key=lambda x: x["expiry"]
-        )
-        return Response(sorted_alert)
-    else:
-        return Response({})
+    return Response(alert_services.info())
 
 
 @api_view(['GET'])
@@ -59,16 +51,16 @@ def event(request):
     Returns:
         dict: events data | None
     """
-    response = warframe_status.world("events")
-    events = []
-    if len(response)>0:
-        for event in response:
-            events.append(clean_event_data(event))
+    return Response(event_services.info())
+    # events = []
+    # if len(response)>0:
+    #     for event in response:
+    #         events.append(clean_event_data(event))
             
-        sorted_event = sorted(
-        [order for order in events ],
-        key=lambda x: x["expiry"]
-        )
-        return Response(sorted_event)
-    else:
-        return Response({})
+    #     sorted_event = sorted(
+    #     [order for order in events ],
+    #     key=lambda x: x["expiry"]
+    #     )
+    #     return Response(sorted_event)
+    # else:
+    #     return Response({})

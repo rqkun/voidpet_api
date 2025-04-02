@@ -1,4 +1,4 @@
-from typing import Literal
+from typing import Dict, List, Literal
 import requests
 from lib.common import raise_detailed_error
 from lib.common import encode_identifier
