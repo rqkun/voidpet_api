@@ -4,9 +4,21 @@ from rest_framework.decorators import api_view
 from lib import warframe_status
 from services.world import alert as alert_services
 from services.world import event as event_services
+from services.world import varzia as vault_services
+from services.world import void as void_services
 @api_view(['GET'])
 def world(request):
     return Response(warframe_status.world())
+
+
+@api_view(['GET'])
+def void(request):
+    """Call the warframe status api for baro  data.
+
+    Returns:
+        dict: Json data of the api response.
+    """
+    return Response(void_services.info())
 
 
 @api_view(['GET'])
@@ -16,17 +28,12 @@ def vault(request):
     Returns:
         dict: Json data of the api response.
     """
-    return Response(warframe_status.world("vaultTrader"))
+    option = request.GET.get("option")  # Get the export name from the request query
 
-
-@api_view(['GET'])
-def void(request):
-    """Call the warframe status api for baro data.
-
-    Returns:
-        dict: Json data of the api response.
-    """
-    return Response(warframe_status.world("voidTrader"))
+    if option and option=="pack":
+        return Response(vault_services.pack())
+    else:    
+        return Response(vault_services.info())
 
 
 @api_view(['GET'])
@@ -52,15 +59,3 @@ def event(request):
         dict: events data | None
     """
     return Response(event_services.info())
-    # events = []
-    # if len(response)>0:
-    #     for event in response:
-    #         events.append(clean_event_data(event))
-            
-    #     sorted_event = sorted(
-    #     [order for order in events ],
-    #     key=lambda x: x["expiry"]
-    #     )
-    #     return Response(sorted_event)
-    # else:
-    #     return Response({})

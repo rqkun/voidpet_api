@@ -1,15 +1,26 @@
-from typing import Dict, List, Literal
+import logging
+from typing import Dict, List, Literal, Union
 import requests
-from lib.common import raise_detailed_error
+from lib.common import format_unique_name, raise_detailed_error
 from lib.common import encode_identifier
 
 class WarframeStatusSearchParams:
-    def __init__(self, identifier, by, type:str=Literal["items","weapons","warframes"],only=None, remove=None):
-        self.identifier = identifier
+    def __init__(self, identifier:Union[List[str],str], by, type:str=Literal["items","weapons","warframes"],only=None, remove=None):
+        self.identifier = encode_identifier(self._map_identifier(identifier,by))
         self.by = by
         self.type = type
         self.only = only or []
         self.remove = remove or []
+
+    def _map_identifier(self,identifier, by):
+        if isinstance(identifier, list):
+            list_str=[]
+            if by =="uniqueName":
+                for id in identifier:
+                    list_str.append(format_unique_name(id))
+            return ",".join(list_str)
+        else: 
+            return format_unique_name(identifier) if by =="uniqueName" else identifier
 
     def to_query_string(self):
         filters = []
@@ -24,7 +35,7 @@ class WarframeStatusSearchParams:
         return "&".join(filters)
 
 
-def world(path=None):
+def world(path=None) -> Union[List[Dict],Dict]:
     """API request to get current world state data.
     Args:
         path(str):
@@ -51,7 +62,8 @@ def world(path=None):
     raise_detailed_error(response)
     return response.json()
 
-def items(params:WarframeStatusSearchParams):
+
+def items(params:WarframeStatusSearchParams)-> Union[List[Dict], Dict]:
     """API request to get item searchable data.
 
     Args:
@@ -60,10 +72,9 @@ def items(params:WarframeStatusSearchParams):
     Returns:
         list: List of items if found, otherwise empty.
     """
-    encoded_key = encode_identifier(params.identifier)
     base_url = "https://api.warframestat.us"
     query_string = params.to_query_string()
-    request_url = f"{base_url}/{params.type}/search/{encoded_key}?{query_string}"
+    request_url = f"{base_url}/{params.type}/search/{params.identifier}?{query_string}"
     headers = {"accept": "application/json"}
     response = requests.get(request_url, headers=headers)
     raise_detailed_error(response)

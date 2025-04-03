@@ -1,4 +1,5 @@
 from datetime import datetime, timezone
+import logging
 import re
 import urllib
 import requests
@@ -22,7 +23,12 @@ def raise_detailed_error(request_object):
         raise requests.exceptions.ConnectionError(error, request_object.text)
 
 
-def encode_identifier(identifier, is_unique=False):
+def format_unique_name(string:str):
+    parts = string.split("/")
+    return "/".join(parts[-3:]) if len(parts) >= 3 else parts[-1]
+
+
+def encode_identifier(identifier):
     """
     Encode an identifier for use in URLs.
 
@@ -33,14 +39,10 @@ def encode_identifier(identifier, is_unique=False):
     Returns:
         str: The encoded identifier.
     """
-    if is_unique:
-        parts = identifier.split("/")
-        identifier = "/".join(parts[-3:]) if len(parts) >= 3 else parts[-1]
-    else:
-        identifier = identifier.replace(" and ", " & ")
-        identifier = re.sub(r'\s*\(.*?\)', '', identifier)
+    identifier = identifier.replace(" and ", " & ")
+    identifier = re.sub(r'\s*\(.*?\)', '', identifier)
+    return urllib.parse.quote(identifier,safe="&,")
 
-    return urllib.parse.quote(identifier,safe="&")
 
 def calculate_percentage_time(start:str,end:str) -> float:
     """Calculate time percentage base on start, end time.
@@ -61,6 +63,7 @@ def calculate_percentage_time(start:str,end:str) -> float:
     total_time = (target_time - start_time).total_seconds()
     percentage_completed = (elapsed_time / total_time)
     return percentage_completed
+
 
 def format_timedelta(delta, day=True):
     """
@@ -84,3 +87,4 @@ def format_timedelta(delta, day=True):
     )
 
     return message + " ago" if total_seconds < 0 else message
+

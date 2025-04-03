@@ -4,7 +4,7 @@ from lib import warframe_status
 from lib.common import calculate_percentage_time, format_timedelta
 
 
-def _clean(data):
+def _clean(data)-> Dict:
     """Cleaning missing data from event API.
 
     Args:
@@ -28,6 +28,7 @@ def _clean(data):
     else: 
         data['node'] = "No Data"
     return data
+
 
 def rewards(data):
     """Get event rewards.
@@ -53,6 +54,7 @@ def rewards(data):
                     rewards.append(item)
 
     return rewards
+
 
 def info():
     result = []
@@ -80,6 +82,6 @@ def info():
                             "rewards": rewards(event),
                         })
     return {
-        "result":result,
+        "result": result,
         "inactive": len(response)- len(result)
     }
