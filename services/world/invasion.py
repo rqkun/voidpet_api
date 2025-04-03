@@ -16,16 +16,18 @@ def info():
                     atk_faction = attacker.get("faction","")
                     atk_rewards = attacker.get("reward", None)
                     if atk_rewards:
-                        atk_reward = atk_rewards.get("asString","None")
-                    else: atk_reward = "None"
+                        atk_reward = {"name":atk_rewards.get("asString","None"),
+                                      "imageName":atk_rewards.get("thumbnail","None")}
+                    else: atk_reward = None
                     
                 defender = invasion.get("defender", None)
                 if defender:
                     def_faction = defender.get("faction","")
                     def_rewards = defender.get("reward", "None")
                     if def_rewards:
-                        def_reward = def_rewards.get("asString","None")
-                    else: def_reward = "None"
+                        def_reward = {"name":def_rewards.get("asString","None"),
+                                      "imageName":def_rewards.get("thumbnail","None")}
+                    else: def_reward = None
 
                 node = invasion.get("node","")
                 completion = invasion.get("completion",0)
@@ -34,6 +36,7 @@ def info():
                 
                 result.append({
                     "node":node,
+                    "requiredRuns": invasion.get("requiredRuns",30000) + invasion.get("count",0),
                     "attack":{
                         "score": atk_completion,
                         "faction": atk_faction,
