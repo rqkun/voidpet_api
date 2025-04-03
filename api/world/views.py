@@ -6,6 +6,7 @@ from services.world import alert as alert_services
 from services.world import event as event_services
 from services.world import varzia as vault_services
 from services.world import void as void_services
+from services.world import invasion as invasion_services
 @api_view(['GET'])
 def world(request):
     return Response(warframe_status.world())
@@ -48,7 +49,7 @@ def alert(request):
 
 @api_view(['GET'])
 def invasion(request):
-    return Response(warframe_status.world("invasions"))
+    return Response(invasion_services.info())
 
 
 @api_view(['GET'])

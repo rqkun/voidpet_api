@@ -67,5 +67,5 @@ def info():
                     })
     return {
         "result":result,
-        "inactive": len(response)- len(result)
+        "completed": len(response)- len(result)
     }
