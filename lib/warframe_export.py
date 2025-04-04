@@ -3,6 +3,7 @@ import json
 import logging
 import lzma
 import re
+from typing import Dict, List, Union
 import requests
 import urllib
 
@@ -10,7 +11,7 @@ from supabase import Client, create_client
 from lib.common import raise_detailed_error
 from dotenv import load_dotenv, find_dotenv
 import os
-def export_open(item:Enum):
+def export_open(item:Enum) -> List[Dict]:
     load_dotenv(find_dotenv())
     """_summary_
 
