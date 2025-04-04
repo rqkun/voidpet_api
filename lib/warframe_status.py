@@ -79,3 +79,24 @@ def items(params:WarframeStatusSearchParams)-> Union[List[Dict], Dict]:
     response = requests.get(request_url, headers=headers)
     raise_detailed_error(response)
     return response.json()
+
+def item(params:WarframeStatusSearchParams) -> dict:
+    """API request to get item searchable data.
+
+    Args:
+        params (WarframeStatusSearchParams): The search parameters.
+
+    Returns:
+        list: List of items if found, otherwise empty.
+    """
+    base_url = "https://api.warframestat.us"
+    query_string = params.to_query_string()
+    request_url = f"{base_url}/{params.type}/{params.identifier}?{query_string}"
+    headers = {"accept": "application/json"}
+    response = requests.get(request_url, headers=headers)
+    if response.status_code == 404:
+        return {}
+    elif response.status_code == 200:
+        return response.json()
+    else:
+        raise_detailed_error(response)
