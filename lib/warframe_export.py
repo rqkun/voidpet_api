@@ -8,7 +8,7 @@ import requests
 import urllib
 
 from supabase import Client, create_client
-from common import raise_detailed_error
+from lib.common import raise_detailed_error
 from dotenv import load_dotenv, find_dotenv
 import os
 def export_open(item:Enum) -> List[Dict]:

@@ -3,4 +3,5 @@ from . import views
 
 urlpatterns =[
     path('',views.export),
+    path('patch',views.update_request),
 ]

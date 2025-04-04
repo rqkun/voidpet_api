@@ -15,3 +15,7 @@ def export(request):
 
     export_enum = getattr(AppExports, export_name)  # Get the enum member dynamically
     return Response(warframe_export.export_open(export_enum.value))
+
+@api_view(['PATCH'])
+def update_request(request):
+    return Response(warframe_export.update_exports())
