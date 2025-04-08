@@ -29,7 +29,9 @@ SECRET_KEY = os.environ['APP_SECRET']
 DEBUG = True
 
 ALLOWED_HOSTS = os.environ['ALLOWED_HOSTS'].split(",")
-
+CORS_ALLOWED_ORIGINS = [
+    'http://localhost:5173',
+]
 
 # Application definition
 
@@ -42,6 +44,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     'rest_framework',
+    'corsheaders',
 ]
 
 MIDDLEWARE = [
@@ -52,6 +55,9 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    
+    'corsheaders.middleware.CorsMiddleware',
+    'django.middleware.common.CommonMiddleware',
 ]
 
 ROOT_URLCONF = 'voidpet.urls'

@@ -19,7 +19,7 @@ def _batch_request(id_list:List,by:str,batch_size:int=10)->List[Dict]:
                     current_batch,
                     by,
                     type="items",
-                    only=["imageName", "name", "uniqueName"]
+                    only=["imageName", "name", "uniqueName","wikiaThumbnail"]
                 )
             )
             result.extend(batch_results)
@@ -34,7 +34,7 @@ def _non_unique_name_batch(items:List[Dict])->Dict:
                         item["name"],
                         "name",
                         type="items",
-                        only=["imageName", "name", "uniqueName"]
+                        only=["imageName", "name", "uniqueName", "wikiaThumbnail"]
                     ))
             result[item["uniqueName"]]= found[0] if len(found)>0 else {}
     return result
@@ -50,14 +50,21 @@ def get_inventory(data: dict, premium_curr: Literal["ducats","regal_aya"], free_
         for item in inventory:
 
             item["price"] = {
-                "ducats": 0,
-                "credits": 0,
-                "regal_aya": 0,
-                "aya": 0,
+                "premium": {
+                    "amount": 0,
+                    "image": ""
+                },
+                "free": {
+                    "amount": 0,
+                    "image": ""
+                },
             }
-
-            item["price"][premium_curr] = item["ducats"] if item["ducats"] is not None else 0
-            item["price"][free_curr] = item["credits"] if item["credits"] is not None else 0
+            if item["ducats"] is not None:
+                item["price"]["premium"]["amount"] = item["ducats"]
+                item["price"]["premium"]["image"] = f"https://wiki.warframe.com/images/{premium_curr}.png"
+            if item["credits"]:
+                item["price"]["free"]["amount"] = item["credits"]
+                item["price"]["free"]["image"] = f"https://wiki.warframe.com/images/{free_curr}.png"
 
             del item["ducats"]
             del item["credits"]
@@ -97,9 +104,13 @@ def get_inventory(data: dict, premium_curr: Literal["ducats","regal_aya"], free_
                     
             if "name" in merged_item: del merged_item["item"]
             
-            if "imageName" in merged_item: 
+            if "wikiaThumbnail" in merged_item and "Mods" in merged_item["uniqueName"]:
+                merged_item["imageName"] = f"""{merged_item["wikiaThumbnail"]}"""
+                
+            elif "imageName" in merged_item: 
                 merged_item["imageName"] = f"""https://cdn.warframestat.us/img/{merged_item["imageName"]}"""
             else: merged_item["imageName"] = "https://wiki.warframe.com/images/IconLotus.png"
+            if "wikiaThumbnail" in merged_item: del merged_item["wikiaThumbnail"]
             merged_list.append(merged_item)
 
     end_time = datetime.strptime(data.get("expiry",""),"%Y-%m-%dT%H:%M:%S.%fZ")

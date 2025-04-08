@@ -6,12 +6,12 @@ import re
 from lib.common import format_timedelta, format_unique_name
 from services.world import vendor
 def _clean_name(name:str)-> str:
-    return re.sub(r'\b(M P V |Dual Pack|Single Pack|Set|Prime)\b', '', name).strip()
+    return re.sub(r'\b(M P V |Dual Pack|Single Pack|Set)\b', '', name).strip()
 
 def info():
     response = warframe_status.world("vaultTrader")
     if response:
-        return vendor.get_inventory(response,"regal_aya","aya")
+        return vendor.get_inventory(response,"RegalAya","Aya")
     else: return {}
 
 def pack():
