@@ -7,3 +7,6 @@ django
 djangorestframework
 python-dotenv
 cffi
+django-cors-headers
+numpy
+pandas

@@ -1,3 +1,4 @@
+from typing import Union
 import requests
 from lib.common import raise_detailed_error
 
@@ -41,7 +42,7 @@ class RivenSearchParams:
             filters.append(f"sort_by={self.sort}")
         return "&".join(filters)
 
-def items(url_path=None,order=False)-> dict:
+def items(url_path=None,order=False,include=False)-> Union[dict,None]:
     """API request to get item's orders.
 
     Args:
@@ -51,14 +52,36 @@ def items(url_path=None,order=False)-> dict:
         dict: Orders data
     """
     if url_path is not None:
-        order_req = "/orders" if order else ""
+        if order:
+            order_req = "/orders" 
+            if include: 
+                order_req = f"{order_req}?include=item"
+        else: order_req = ""
         path = f"/{url_path}{order_req}"
     else:
         path =""
     base_url = "https://api.warframe.market/v1"
+    
     request_url = f"{base_url}/items{path}"
     headers = {"accept": "application/json"}
     response = requests.get(request_url,headers=headers)
+    if response.status_code == 404:
+        return None
+    elif response.status_code == 200:
+        list_included:list = []
+        img_link = ""
+        if "include" in response.json():
+            if "item" in response.json()["include"]:
+                list_included:list = response.json()["include"]["item"].get("items_in_set",[])
+                for item in list_included:
+                    if item.get("set_root",False):
+                        img_link = item["en"].get("icon","")
+                        break
+        return{
+                "url": url_path,
+                "img_link": img_link,
+                "orders": response.json()["payload"]["orders"]
+            }
     raise_detailed_error(response)
     return response.json()
 
